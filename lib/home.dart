@@ -5,6 +5,7 @@ import 'package:payment/services/apilistener.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:payment/signin.dart';
+import 'package:payment/history.dart';
 
 
 
@@ -34,7 +35,7 @@ class _HomePageState extends State<Home> {
 
     super.initState();
   
-   WebServices(this.mApiListener).getData().then((result) {
+   WebServices(this.mApiListener).getData(this.userId).then((result) {
        
         if (result!=null) {
           setState(() {
@@ -77,7 +78,7 @@ class _HomePageState extends State<Home> {
                  ),
             ),
             ListTile(
-              title: Text('Item 1'),
+              title: Text('Beneficiaries'),
               onTap: () {
                 // Update the state of the app
                 // ...
@@ -86,15 +87,19 @@ class _HomePageState extends State<Home> {
               },
             ),
             ListTile(
-              title: Text('Item 2'),
+              title: Text('Transaction History'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
+                
                 Navigator.pop(context);
+                Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => History()),
+            );
               },
             ),
-            RaisedButton(
+           Column(
+             children: <Widget>[
+                RaisedButton(
            onPressed: () async{
             await FirebaseAuth.instance.signOut().then((action){
                Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
@@ -107,6 +112,11 @@ class _HomePageState extends State<Home> {
            elevation: 7.0,
            color: Colors.black,
          )    
+          
+             ],
+           ),
+           
+           
           ],
         ),
       ),
@@ -116,9 +126,9 @@ class _HomePageState extends State<Home> {
              
               children: <Widget>[
                Text('${this.userId}'),
-                 if (offerResult!=null) 
-                balaneCard(offerResult[1]),
-                
+             if (offerResult!=null) 
+                balaneCard(offerResult[0]),
+             
                 ],
             ),
           ),
@@ -154,12 +164,14 @@ class _HomePageState extends State<Home> {
                 FlatButton(
                   child: const Text('Send', style: TextStyle(color: Colors.white)),
                   onPressed: () {
-                    sendModalBottomSheet(context);
+                    sendModalBottomSheet(context, data);
                   },
                 ),
                 FlatButton(
                   child: const Text('Recieve', style: TextStyle(color: Colors.white)),
-                  onPressed: () {},
+                  onPressed: () {
+                   
+                  },
                 ),
               ],
             ),
@@ -172,7 +184,7 @@ class _HomePageState extends State<Home> {
   }
   
    
-  void sendModalBottomSheet(context){
+  void sendModalBottomSheet(context,Data data){
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -226,8 +238,20 @@ class _HomePageState extends State<Home> {
               Expanded(child: RaisedButton(
                 onPressed: () {
                  
-                 WebServices(this.mApiListener).updateAmount(amountController.text);
                  Navigator.pop(context);
+ Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
+                   Home()
+                   ));
+                FutureBuilder(
+                  future: WebServices(this.mApiListener).updateAmount(amountController.text,this.userId),
+                  builder: (context,snapshot){
+                      if (snapshot.data) {
+                          return new Text('data');
+                      }
+                      return new CircularProgressIndicator();
+                  },
+                );
+
               },
               child: Text("Send"),color: Colors.orange,textColor: Colors.white,)),
               Expanded(child: RaisedButton(

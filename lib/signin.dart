@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:payment/home.dart';
 import'package:flutter_verification_code_input/flutter_verification_code_input.dart';
-
+import 'package:payment/services/webservices.dart';
+import 'package:payment/services/apilistener.dart';
 
 class Signin extends StatefulWidget {
   
@@ -13,6 +14,7 @@ class Signin extends StatefulWidget {
 class _SigninPageState extends State<Signin> {
  final TextEditingController amountController = TextEditingController();
  
+ ApiListener mApiListener;
  String phoneNo;
  String smsCode;
  String verificationId;
@@ -101,14 +103,16 @@ final AuthCredential credential = PhoneAuthProvider.getCredential(
   smsCode: smsCode,
 );
 
- FirebaseAuth.instance.signInWithCredential(credential)
-         .then((user){
-                 Navigator.of(context).pop();
+ FirebaseAuth.instance.signInWithCredential(credential).then((user){
 
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
-          Home()
-        ));
-       
+                    WebServices(this.mApiListener).createAccount(this.phoneNo);
+                    Navigator.of(context).pop();
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
+                   Home()
+                   ));
+                  
+                  
+      
 }).catchError((e){
   print(e);
 });
