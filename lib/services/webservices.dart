@@ -24,12 +24,12 @@ class WebServices {
       return datas;
   }
 
+ 
   Future<int> updateAmount(String amount,String sender,String receiver) async{
    var url = 'https://www.hashnative.com/updateoffers';
    var response = await http.post(url, body: {'sender': '$sender','receiver': '$receiver',  'offer_price': '$amount'}); 
   
-     print('Response status: ${response.statusCode}');
-     print('Response body: ${response.body}');
+    // print(response.body);
      return response.statusCode;
 }
 
