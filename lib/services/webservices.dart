@@ -9,9 +9,9 @@ class WebServices {
 
   WebServices(this.mApiListener);
 
- Future<List<Data>> getData() async{
-
-      var user = await http.get("https://www.hashnative.com/alloffers");
+ Future<List<Data>> getData(String mobile) async{
+     
+      var user = await http.get("https://www.hashnative.com/alloffers/$mobile");
       var jsonData = json.decode(user.body);
 
       List<Data> datas = [];
@@ -24,13 +24,21 @@ class WebServices {
       return datas;
   }
 
-  updateAmount(String amount) async{
-var user = await http.post("https://www.hashnative.com/updateoffers/16/$amount");
-      json.decode(user.body);
-
+  Future<int> updateAmount(String amount,String sender,String receiver) async{
+   var url = 'https://www.hashnative.com/updateoffers';
+   var response = await http.post(url, body: {'sender': '$sender','receiver': '$receiver',  'offer_price': '$amount'}); 
+  
+     print('Response status: ${response.statusCode}');
+     print('Response body: ${response.body}');
+     return response.statusCode;
 }
 
-
+createAccount(String contact) async {
+var url = 'https://www.hashnative.com/createaccount';
+var response = await http.post(url, body: {'name': 'ilham', 'contact': '$contact',  'offer_price': '50'});
+print('Response status: ${response.statusCode}');
+print('Response body: ${response.body}');
+}
 
 
 }
