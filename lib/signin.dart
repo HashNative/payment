@@ -61,22 +61,44 @@ await FirebaseAuth.instance.verifyPhoneNumber(
        context: context,
        barrierDismissible: false,
        builder: (BuildContext contect){
-         return new AlertDialog(
-           title: Text('Enter SMS Code'),
-           content: 
-           new VerificationCodeInput(
+       
+       return Scaffold(
+      appBar: AppBar(
+          centerTitle: true,
+          title: Text("Mobile verification",
+              style:
+              TextStyle(fontFamily: "Exo2", color: Colors.white)),
+          backgroundColor: Colors.black,
+        ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Center(
+          
+          child: Column(
+            children: <Widget>[
+              Text("Enter the 6 digit code sent to ${this.phoneNo}",
+              style:
+              TextStyle(fontFamily: "Exo2", color: Colors.black)),
+              new VerificationCodeInput(
             keyboardType: TextInputType.number,
             length: 6,
             onCompleted: (String value) {
               this.smsCode=value;
             },
            ),
-           contentPadding: EdgeInsets.all(10.0),
-           actions: <Widget>[
-             new FlatButton(
-               child: Text('Done'),
-               onPressed: (){
-               FirebaseAuth.instance.currentUser().then((user) {
+             Spacer(),
+             Container(
+               child: Ink(
+        decoration: ShapeDecoration(
+          color: Colors.black,
+          shape: CircleBorder(),
+          
+        ),
+        child:  IconButton(
+          icon: Icon(Icons.arrow_forward),
+          color: Colors.white,
+          onPressed: () {
+           FirebaseAuth.instance.currentUser().then((user) {
                  if (user!=null) {
                    Navigator.of(context).pop();
                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
@@ -87,11 +109,17 @@ await FirebaseAuth.instance.verifyPhoneNumber(
                    signIn();
                  }
                });
-
-               }
-             )
-           ],
-         );
+          },
+        ),
+           ),
+             ),
+         
+            ],
+          ),
+        ),
+      ),
+    );
+       
        }
      );
    } 

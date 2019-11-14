@@ -20,8 +20,16 @@ class _HomePageState extends State<Home> {
  ApiListener mApiListener;
  List<Data> offerResult;
 
-
  String userId;
+int _user;
+
+
+var users = <String>[
+  'Bob',
+  'Allie',
+  'Jason',
+];
+
    @override
   void initState() {
 
@@ -98,8 +106,9 @@ class _HomePageState extends State<Home> {
               },
             ),
            Column(
-             children: <Widget>[
-                RaisedButton(
+             
+              children: <Widget>[
+                 RaisedButton(
            onPressed: () async{
             await FirebaseAuth.instance.signOut().then((action){
                Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
@@ -111,11 +120,10 @@ class _HomePageState extends State<Home> {
            textColor: Colors.white,
            elevation: 7.0,
            color: Colors.black,
-         )    
-          
-             ],
-           ),
+         ) 
            
+              ],
+           )
            
           ],
         ),
@@ -192,21 +200,45 @@ class _HomePageState extends State<Home> {
           return Container(
             child: new Wrap(
             children: <Widget>[
-       new ListTile(
+         ListTile(
             leading: new Icon(Icons.music_note),
             title: new Text('Send Money'),
             onTap: () => {}          
           ),
-             Padding(
-                padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: Row(
-                  children: <Widget>[
-                    Text(
+          ListTile(
+            leading: new Icon(Icons.music_note),
+            title:  new DropdownButton<String>(
+  hint: new Text('Pickup on every'),
+  value: _user == null ? null : users[_user],
+  items: users.map((String value) {
+    return new DropdownMenuItem<String>(
+      value: value,
+      child: new Text(value),
+    );
+  }).toList(),
+  onChanged: (value) {
+    setState(() {
+      _user = users.indexOf(value);
+    });
+  },
+),
+           
+            onTap: () => {}          
+          ),
+         
+         
+           ListTile(
+            leading: Text(
                       '\LKR',
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 30.0),
                     ),
+            title:  Padding(
+                padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: Row(
+                  children: <Widget>[
+                    
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 12.0),
@@ -232,6 +264,10 @@ class _HomePageState extends State<Home> {
                   ],
                 ),
               ),
+            
+            onTap: () => {}          
+          ),
+            
             ListTile(
           title: Row(
             children: <Widget>[
@@ -243,7 +279,7 @@ class _HomePageState extends State<Home> {
                    Home()
                    ));
                 FutureBuilder(
-                  future: WebServices(this.mApiListener).updateAmount(amountController.text,this.userId),
+                  future: WebServices(this.mApiListener).updateAmount(amountController.text,this.userId,'+94777140803'),
                   builder: (context,snapshot){
                       if (snapshot.data) {
                           return new Text('data');
@@ -274,4 +310,18 @@ class _HomePageState extends State<Home> {
 
 }
 
+
+class RedeemConfirmationScreen extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+  backgroundColor: Colors.white.withOpacity(0.85), // this is the main reason of transparency at next screen. I am ignoring rest implementation but what i have achieved is you can see.
+   body: Center(
+     child: Column(
+       children: <Widget>[],
+     ),
+   ),
+  );
+ }
+}
 
