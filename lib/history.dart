@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:http/http.dart' as http;
 import 'package:payment/services/services.dart';
-import 'dart:convert';
 
 
 class History extends StatefulWidget {
@@ -33,8 +31,6 @@ ApiListener mApiListener;
   
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,28 +41,35 @@ ApiListener mApiListener;
               TextStyle(fontFamily: "Exo2", color: Colors.white)),
           backgroundColor: Colors.black,
         ),
-        body: Center(
-             child: SingleChildScrollView(
-            child: Column(
-             
-              children: <Widget>[
-               FutureBuilder(
-                 future: getHistoryData(),
+        body: Container(
+             child: FutureBuilder(
+                 future: WebServices(this.mApiListener).getHistoryData(),
                  builder: (BuildContext context, AsyncSnapshot snapshot){
-                   
-                   return ListView.builder(
+                   if (snapshot.data==null) {
+                      return Container(
+                        child: Center(
+                          child: Text('Fetching data..'),
+                        ),
+                      );
+                   } else {
+                     return ListView.builder(
+                       shrinkWrap: true,
                       itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index){
                         return ListTile(
-                          title: Text(snapshot.data[index].sender),
+                          leading: Text(snapshot.data[index].sender),
+                          title: Text(snapshot.data[index].receiver),
+                          subtitle: Text(snapshot.data[index].type),
+                          trailing: Text(snapshot.data[index].amount),
                         );
                       },
                    );
+                   }
+                   
+                   
                  },
                )
-                ],
-            ),
-          ),
+               
                 )
             
     );

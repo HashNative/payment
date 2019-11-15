@@ -77,7 +77,7 @@ await FirebaseAuth.instance.verifyPhoneNumber(
           child: Column(
             children: <Widget>[
               Text("Enter the 6 digit code sent to ${this.phoneNo}",
-              style: TextStyle(fontFamily: "Exo2",color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+              style: TextStyle(fontFamily: "Exo2",color: Colors.black, fontSize: 19, fontWeight: FontWeight.bold)),
               new VerificationCodeInput(
             keyboardType: TextInputType.number,
             length: 6,
@@ -123,14 +123,17 @@ await FirebaseAuth.instance.verifyPhoneNumber(
      );
    } 
 
- signIn() {
+ signIn() async {
+
+
 
 final AuthCredential credential = PhoneAuthProvider.getCredential(
   verificationId: verificationId,
   smsCode: smsCode,
 );
 
- FirebaseAuth.instance.signInWithCredential(credential).then((user){
+        await FirebaseAuth.instance.signOut().then((action){
+FirebaseAuth.instance.signInWithCredential(credential).then((user){
 
                     WebServices(this.mApiListener).createAccount(this.phoneNo);
                     Navigator.of(context).pop();
@@ -143,6 +146,7 @@ final AuthCredential credential = PhoneAuthProvider.getCredential(
 }).catchError((e){
   print(e);
 });
+            });
 
 }
   
@@ -158,20 +162,22 @@ final AuthCredential credential = PhoneAuthProvider.getCredential(
               TextStyle(fontFamily: "Exo2", color: Colors.white)),
           backgroundColor: Colors.black,
         ),
-        body: Center(
+        body: 
+         Center(
              child: SingleChildScrollView(
             child: Column(
-             
-              children: <Widget>[
+             children: <Widget>[
                   TextField(
            decoration: InputDecoration(hintText: 'Enter phone number'),
+           keyboardType: TextInputType.phone,
+           style: TextStyle(fontSize: 22),
            onChanged: (value){
              this.phoneNo = value;
            },
            
          ),
-         SizedBox(height: 10.0),
-         RaisedButton(
+                  SizedBox(height: 10.0),
+                  RaisedButton(
            onPressed: verifyPhone,
            child: Text('verify'),
            textColor: Colors.white,
@@ -180,10 +186,10 @@ final AuthCredential credential = PhoneAuthProvider.getCredential(
          )
         
                 ],
+              
             ),
           ),
-                )
-            
+                )   
     );
   }
 

@@ -1,8 +1,5 @@
 
 
-
-
-
 import 'package:payment/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -12,6 +9,7 @@ class UpdateAmount extends StatelessWidget  {
   final String mobileNumber;
   final String userId;
   final ApiListener mApiListener;
+  
   UpdateAmount(this.mobileNumber,this.userId, this.mApiListener);
   @override
   
@@ -22,7 +20,7 @@ return Scaffold(
      body: 
      
      Center(
-             child: FutureBuilder<int>(
+             child: FutureBuilder<String>(
                   future: WebServices(this.mApiListener).updateAmount(this.mobileNumber,this.userId,'+94777140803'),
                   builder: (context,snapshot){
                     
@@ -35,7 +33,8 @@ return Scaffold(
                          
                          child: Column(
                            children: <Widget>[
-                            Text('Money Sent Successfully.', style: TextStyle(fontFamily: "Exo2",color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                            Text('${snapshot.data}', style: TextStyle(fontFamily: "Exo2",color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                            SizedBox(height: 20.0),
                             RaisedButton(
                               onPressed: (){
                                   Navigator.pop(context);
@@ -43,7 +42,7 @@ return Scaffold(
                                      Home()
                                      ));
                               },
-                              child: Text('Done'),
+                              child: Text('Okay'),
                             ),
                          
                           ],

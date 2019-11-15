@@ -32,7 +32,7 @@ var users = <String>[
    @override
   void initState() {
 
-    FirebaseAuth.instance.currentUser().then((value){
+    currentUser().then((value){
        if (value!=null) {
        setState(() {
     this.userId=value.phoneNumber;
@@ -42,6 +42,8 @@ var users = <String>[
 
     super.initState();
   
+
+
    WebServices(this.mApiListener).getData().then((result) {
        
         if (result!=null) {
@@ -304,7 +306,7 @@ Navigator.of(context).push(PageRouteBuilder(
     );
 }
 
-Future<bool> smsCodeDialog(BuildContext context){
+   Future<bool> smsCodeDialog(BuildContext context){
      return showDialog(
        context: context,
        barrierDismissible: false,
@@ -362,6 +364,13 @@ Future<bool> smsCodeDialog(BuildContext context){
        }
      );
    } 
+
+
+   Future<FirebaseUser> currentUser() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    return user;
+  }
+
 
 }
 

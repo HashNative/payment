@@ -25,7 +25,7 @@ class WebServices {
   }
 
  
-  Future<int> updateAmount(String amount,String sender,String receiver) async{
+  Future<String> updateAmount(String amount,String sender,String receiver) async{
     DateTime now = DateTime.now();
 String formattedDate = DateFormat('kk:mm:ss \n EEE d MMM').format(now);
    var url = 'https://www.hashnative.com/updateoffers';
@@ -33,7 +33,7 @@ String formattedDate = DateFormat('kk:mm:ss \n EEE d MMM').format(now);
   
   print(response.statusCode);
      print(response.body);
-     return response.statusCode;
+     return response.body;
 }
 
 createAccount(String contact) async {
@@ -43,14 +43,12 @@ print('Response status: ${response.statusCode}');
 print('Response body: ${response.body}');
 }
 
-
-}
-
+  
  Future<List<HistoryData>> getHistoryData() async{
-     var url = 'https://www.hashnative.com/gethistory';
-      var user = await http.get(url);
+     
+      var user = await http.get('https://www.hashnative.com/gethistory');
       var jsonData = json.decode(user.body);
-
+      print(user.body);
       List<HistoryData> datas = [];
 
       for (var d in jsonData){
@@ -61,6 +59,9 @@ print('Response body: ${response.body}');
       return datas;
   }
 
+
+
+}
 
 
 
