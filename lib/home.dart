@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:payment/services/webservices.dart';
-import 'package:payment/services/apilistener.dart';
+import 'package:payment/services/services.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:payment/signin.dart';
 import 'package:payment/history.dart';
-
+import 'package:payment/widgets/update_amount.dart';
 
 
 class Home extends StatefulWidget {
@@ -43,11 +42,12 @@ var users = <String>[
 
     super.initState();
   
-   WebServices(this.mApiListener).getData(this.userId).then((result) {
+   WebServices(this.mApiListener).getData().then((result) {
        
         if (result!=null) {
           setState(() {
-    offerResult = result;
+    offerResult = result.where((el)=>el.contact==this.userId).toList();
+    
          });
          
         }
@@ -79,15 +79,15 @@ var users = <String>[
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: Text('${this.userId}'), 
-                 accountEmail: null,
+              accountName: Text('Ilham Safeek'),
+              accountEmail: Text('${this.userId}'),
                  currentAccountPicture: CircleAvatar(
                    child: Text("i"),              
                  ),
             ),
             ListTile(
               title: Text('Beneficiaries'),
-              onTap: () {
+            onTap: () {
                 // Update the state of the app
                 // ...
                 // Then close the drawer
@@ -134,9 +134,8 @@ var users = <String>[
              
               children: <Widget>[
                Text('${this.userId}'),
-             if (offerResult!=null) 
-                balaneCard(offerResult[0]),
              
+             offerResult!=null ? balaneCard(offerResult[0]) : Text('Fetching data..'),
                 ],
             ),
           ),
@@ -206,7 +205,7 @@ var users = <String>[
             onTap: () => {}          
           ),
           ListTile(
-            leading: new Icon(Icons.music_note),
+            
             title:  new DropdownButton<String>(
   hint: new Text('Pickup on every'),
   value: _user == null ? null : users[_user],
@@ -275,18 +274,16 @@ var users = <String>[
                 onPressed: () {
                  
                  Navigator.pop(context);
- Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
-                   Home()
-                   ));
-                FutureBuilder(
-                  future: WebServices(this.mApiListener).updateAmount(amountController.text,this.userId,'+94777140803'),
-                  builder: (context,snapshot){
-                      if (snapshot.data) {
-                          return new Text('data');
-                      }
-                      return new CircularProgressIndicator();
-                  },
-                );
+//  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
+//                    Home()
+//                    ));
+
+Navigator.of(context).push(PageRouteBuilder(
+    opaque: false,
+    pageBuilder: (BuildContext context, _, __) =>
+        UpdateAmount(amountController.text,this.userId, this.mApiListener)));
+
+
 
               },
               child: Text("Send"),color: Colors.orange,textColor: Colors.white,)),
@@ -307,21 +304,64 @@ var users = <String>[
     );
 }
 
+Future<bool> smsCodeDialog(BuildContext context){
+     return showDialog(
+       context: context,
+       barrierDismissible: false,
+       builder: (BuildContext contect){
+       
+       return Scaffold(
+      appBar: AppBar(
+          centerTitle: true,
+          title: Text("Mobile verification",
+              style:
+              TextStyle(fontFamily: "Exo2", color: Colors.white)),
+          backgroundColor: Colors.black,
+        ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Center(
+          
+          child: Column(
+            children: <Widget>[
+              
+             Spacer(),
+             Container(
+               child: Ink(
+        decoration: ShapeDecoration(
+          color: Colors.black,
+          shape: CircleBorder(),
+          
+        ),
+        child:  IconButton(
+          icon: Icon(Icons.arrow_forward),
+          color: Colors.white,
+          onPressed: () {
+           FirebaseAuth.instance.currentUser().then((user) {
+                 if (user!=null) {
+                   Navigator.of(context).pop();
+                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
+                      Home()
+                    ));
+                 }else{
+                   Navigator.of(context).pop();
+                   
+                 }
+               });
+          },
+        ),
+           ),
+             ),
+         
+            ],
+          ),
+        ),
+      ),
+    );
+       
+       }
+     );
+   } 
 
-}
-
-
-class RedeemConfirmationScreen extends StatelessWidget {
-@override
-Widget build(BuildContext context) {
-return Scaffold(
-  backgroundColor: Colors.white.withOpacity(0.85), // this is the main reason of transparency at next screen. I am ignoring rest implementation but what i have achieved is you can see.
-   body: Center(
-     child: Column(
-       children: <Widget>[],
-     ),
-   ),
-  );
- }
 }
 

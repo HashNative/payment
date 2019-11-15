@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+import 'package:payment/services/services.dart';
+import 'dart:convert';
 
 
 class History extends StatefulWidget {
@@ -8,6 +12,27 @@ class History extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<History> {
+ApiListener mApiListener;
+ String userId;
+
+
+   @override
+  void initState() {
+
+    FirebaseAuth.instance.currentUser().then((value){
+       if (value!=null) {
+       setState(() {
+    this.userId=value.phoneNumber;
+         });
+       }
+    });
+
+    super.initState();
+  
+ 
+  
+  }
+
 
 
   @override
@@ -25,7 +50,20 @@ class _HistoryPageState extends State<History> {
             child: Column(
              
               children: <Widget>[
-                
+               FutureBuilder(
+                 future: getHistoryData(),
+                 builder: (BuildContext context, AsyncSnapshot snapshot){
+                   
+                   return ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index){
+                        return ListTile(
+                          title: Text(snapshot.data[index].sender),
+                        );
+                      },
+                   );
+                 },
+               )
                 ],
             ),
           ),
@@ -35,3 +73,4 @@ class _HistoryPageState extends State<History> {
   }
 
 }
+

@@ -77,8 +77,7 @@ await FirebaseAuth.instance.verifyPhoneNumber(
           child: Column(
             children: <Widget>[
               Text("Enter the 6 digit code sent to ${this.phoneNo}",
-              style:
-              TextStyle(fontFamily: "Exo2", color: Colors.black)),
+              style: TextStyle(fontFamily: "Exo2",color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
               new VerificationCodeInput(
             keyboardType: TextInputType.number,
             length: 6,
