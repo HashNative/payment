@@ -42,11 +42,12 @@ var users = <String>[
 
     super.initState();
   
-   WebServices(this.mApiListener).getData(this.userId).then((result) {
+   WebServices(this.mApiListener).getData().then((result) {
        
         if (result!=null) {
           setState(() {
-    offerResult = result;
+    offerResult = result.where((el)=>el.contact==this.userId).toList();
+    
          });
          
         }
@@ -78,15 +79,15 @@ var users = <String>[
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: Text('${this.userId}'), 
-                 accountEmail: null,
+              accountName: Text('Ilham Safeek'),
+              accountEmail: Text('${this.userId}'),
                  currentAccountPicture: CircleAvatar(
                    child: Text("i"),              
                  ),
             ),
             ListTile(
               title: Text('Beneficiaries'),
-              onTap: () {
+            onTap: () {
                 // Update the state of the app
                 // ...
                 // Then close the drawer
@@ -133,9 +134,8 @@ var users = <String>[
              
               children: <Widget>[
                Text('${this.userId}'),
-             if (offerResult!=null) 
-                balaneCard(offerResult[0]),
              
+             offerResult!=null ? balaneCard(offerResult[0]) : Text('Fetching data..'),
                 ],
             ),
           ),
@@ -284,29 +284,6 @@ Navigator.of(context).push(PageRouteBuilder(
         UpdateAmount(amountController.text,this.userId, this.mApiListener)));
 
 
-
-                
-// return Scaffold(
-//   backgroundColor: Colors.white.withOpacity(0.85), // this is the main reason of transparency at next screen. I am ignoring rest implementation but what i have achieved is you can see.
-//   body: FutureBuilder<int>(
-//                   future: WebServices(this.mApiListener).updateAmount(amountController.text,this.userId,'+94777140803'),
-//                   builder: (context,snapshot){
-                    
-                   
-//                   if (snapshot.data!=null) {
-//                      return Text('data comes.');
-//                    }
-//                    if (snapshot.hasError) {
-//                       return Text('Error: ${snapshot.error}');
-//                    }
-//                  return CircularProgressIndicator();
-
-
-//                   },
-//                 )
-  
-//   );
- 
 
               },
               child: Text("Send"),color: Colors.orange,textColor: Colors.white,)),
