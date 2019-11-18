@@ -1,9 +1,11 @@
+import 'package:country_pickers/country.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:payment/home.dart';
-import'package:flutter_verification_code_input/flutter_verification_code_input.dart';
+import 'package:flutter_verification_code_input/flutter_verification_code_input.dart';
 import 'package:payment/services/webservices.dart';
 import 'package:payment/services/apilistener.dart';
+import 'package:country_pickers/country_pickers.dart';
 
 class Signin extends StatefulWidget {
   
@@ -16,6 +18,7 @@ class _SigninPageState extends State<Signin> {
  
  ApiListener mApiListener;
  String phoneNo;
+ String countryCode='+94';
  String smsCode;
  String verificationId;
  
@@ -37,17 +40,25 @@ class _SigninPageState extends State<Signin> {
     };
     final PhoneVerificationCompleted verifiedSuccess = (AuthCredential credential) {
        print('verified');
-       Navigator.of(context).pop();
-       Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
-          Home()
-        ));
+       FirebaseAuth.instance.signInWithCredential(credential).then((user){
 
+                    Navigator.of(context).pop();
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
+                   Home()
+                   ));
+                  
+                  
+      
+}).catchError((e){
+  print(e);
+});
     };
     final PhoneVerificationFailed veriFailed =(AuthException exception){
       print('${exception.message}');
+       
     };
 await FirebaseAuth.instance.verifyPhoneNumber(
-   phoneNumber: this.phoneNo,
+   phoneNumber: "${this.countryCode} ${this.phoneNo}",
    codeAutoRetrievalTimeout: autoRetrive,
    codeSent: smsCodeSent,
    timeout: const Duration(seconds:5),
@@ -75,6 +86,7 @@ await FirebaseAuth.instance.verifyPhoneNumber(
         child: Center(
           
           child: Column(
+
             children: <Widget>[
               Text("Enter the 6 digit code sent to ${this.phoneNo}",
               style: TextStyle(fontFamily: "Exo2",color: Colors.black, fontSize: 19, fontWeight: FontWeight.bold)),
@@ -163,37 +175,85 @@ FirebaseAuth.instance.signInWithCredential(credential).then((user){
           backgroundColor: Colors.black,
         ),
         body: 
-         Center(
+        Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Center(
              child: SingleChildScrollView(
+             
+           
             child: Column(
              children: <Widget>[
-                  TextField(
-           decoration: InputDecoration(hintText: 'Enter phone number'),
-           keyboardType: TextInputType.phone,
-           style: TextStyle(fontSize: 22),
-           onChanged: (value){
-             this.phoneNo = value;
-           },
-           
-         ),
-                  SizedBox(height: 10.0),
+               Text('Please enter your mobile number',style: TextStyle(fontSize: 18, fontFamily: "Exo2")),
+                 SizedBox(height: 15.0),
+                  Row(
+               children: <Widget>[
+                      Expanded(
+                        
+                        child: CountryPickerDropdown(
+                          
+                          initialValue: 'lk',
+                          itemBuilder: _buildDropdownItem,
+                          onValuePicked: (Country country) {
+                            print("${country.phoneCode}");
+                            this.countryCode="+${country.phoneCode}";
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        
+                        child: TextField(
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            focusColor: Colors.black,
+                            hintText: "777140803",
+                          ),
+                          style: TextStyle(fontSize: 18, fontFamily: "Exo2"),
+                          onChanged: (value){
+                            print(value);
+                            this.phoneNo = value;
+                            },
+                        ),
+                      ),
+                    ],
+                  ),
+             
+                  SizedBox(height: 15.0),
                   RaisedButton(
            onPressed: verifyPhone,
            child: Text('verify'),
            textColor: Colors.white,
            elevation: 7.0,
-           color: Colors.blue,
+           color: Colors.black,
          )
         
                 ],
               
             ),
+          
           ),
-                )   
+                ),
+        )
+
+
+
+
+         
     );
   }
 
 
+Widget _buildDropdownItem(Country country) => Container(
+        child: Row(
+          children: <Widget>[
+            CountryPickerUtils.getDefaultFlagImage(country),
+            SizedBox(
+              width: 3.0,
+            ),
+            Text("+${country.phoneCode}", style: TextStyle(fontSize: 18, fontFamily: "Exo2")),
+          ],
+        ),
+      );
+
+
+
 }
-
-

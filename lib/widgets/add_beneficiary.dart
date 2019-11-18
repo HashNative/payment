@@ -1,17 +1,16 @@
 
-
 import 'package:payment/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:payment/home.dart';
 
-class UpdateAmount extends StatelessWidget  {
-  final String amount;
-  final String userId;
-  final String receiver;
+class AddBeneficiary extends StatelessWidget  {
+  final String addedBy;
+  final String name;
+  final String mobile;
   final ApiListener mApiListener;
   
-  UpdateAmount(this.amount,this.userId, this.mApiListener,this.receiver);
+  AddBeneficiary(this.mobile,this.addedBy, this.mApiListener,this.name);
   @override
   
 @override
@@ -22,7 +21,7 @@ return Scaffold(
      
      Center(
              child: FutureBuilder<String>(
-                  future: WebServices(this.mApiListener).updateAmount(this.amount,this.userId,this.receiver),
+                  future: WebServices(this.mApiListener).addBeneficiary(this.mobile),
                   builder: (context,snapshot){
                     
                    

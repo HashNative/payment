@@ -53,11 +53,34 @@ print('Response body: ${response.body}');
 
       for (var d in jsonData){
 
-      HistoryData data = HistoryData(d["id"],d["amount"],d["type"],d["sender"],d["receiver"],d["time"]);
+      HistoryData data = HistoryData(d["id"],d["type"],d["sender"],d["receiver"],d["time"],d["amount"]);
         datas.add(data);
       }
       return datas;
   }
+
+ Future<List<BeneficiariesData>> getBeneficiaries() async{
+     
+      var user = await http.get("https://www.hashnative.com/getbeneficiaries");
+      var jsonData = json.decode(user.body);
+      
+      List<BeneficiariesData> datas = [];
+
+      for (var d in jsonData){
+
+      BeneficiariesData data = BeneficiariesData(d["id"],d["name"],d["added_by"],d["mobile"]);
+        datas.add(data);
+      }
+      return datas;
+  }
+
+Future<String> addBeneficiary(String contact) async {
+var url = 'https://www.hashnative.com/addbeneficiary';
+var response = await http.post(url, body: {'added_by': 'ilham', 'mobile': '$contact',  'name': 'safeek'});
+print('Response status: ${response.statusCode}');
+print('Response body: ${response.body}');
+return response.body;
+}
 
 
 
@@ -95,4 +118,17 @@ class HistoryData {
 
 }
 
+
+
+class BeneficiariesData {
+   final String id;
+  final String addedBy;
+  final String name;
+  final String mobile;
+ 
+ 
+  BeneficiariesData(this.id, this.name, this.addedBy, this.mobile);
+
+
+}
 

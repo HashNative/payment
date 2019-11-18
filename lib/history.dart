@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:payment/services/services.dart';
 
-
 class History extends StatefulWidget {
   
   @override
@@ -57,6 +56,7 @@ ApiListener mApiListener;
                       itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index){
                         return ListTile(
+                          isThreeLine: true,
                           leading: Text(snapshot.data[index].sender),
                           title: Text(snapshot.data[index].receiver),
                           subtitle: Text(snapshot.data[index].type),
