@@ -8,199 +8,169 @@ import 'package:payment/services/apilistener.dart';
 import 'package:country_pickers/country_pickers.dart';
 
 class Signin extends StatefulWidget {
-  
   @override
   _SigninPageState createState() => _SigninPageState();
 }
 
 class _SigninPageState extends State<Signin> {
- final TextEditingController amountController = TextEditingController();
- 
- ApiListener mApiListener;
- String phoneNo;
- String countryCode='+94';
- String smsCode;
- String verificationId;
- 
- 
- Future<void> verifyPhone() async{
-    final PhoneCodeAutoRetrievalTimeout autoRetrive = (String verId){
-       this.verificationId = verId;
-       smsCodeDialog(context);
-      
-    };
-    final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResend]){
-       this.verificationId = verId;
-       smsCodeDialog(context).then((value) {
+  final TextEditingController amountController = TextEditingController();
 
-         print('signed in');
-       });
+  ApiListener mApiListener;
+  String phoneNo;
+  String countryCode = '+94';
+  String smsCode;
+  String verificationId;
 
-      
+  Future<void> verifyPhone() async {
+    final PhoneCodeAutoRetrievalTimeout autoRetrive = (String verId) {
+      this.verificationId = verId;
+      smsCodeDialog(context);
     };
-    final PhoneVerificationCompleted verifiedSuccess = (AuthCredential credential) {
-       print('verified');
-       FirebaseAuth.instance.signInWithCredential(credential).then((user){
-
-                    Navigator.of(context).pop();
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
-                   Home()
-                   ));
-                  
-                  
-      
-}).catchError((e){
-  print(e);
-});
+    final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResend]) {
+      this.verificationId = verId;
+      smsCodeDialog(context).then((value) {
+        print('signed in');
+      });
     };
-    final PhoneVerificationFailed veriFailed =(AuthException exception){
+    final PhoneVerificationCompleted verifiedSuccess =
+        (AuthCredential credential) {
+      print('verified');
+      FirebaseAuth.instance.signInWithCredential(credential).then((user) {
+        Navigator.of(context).pop();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (BuildContext context) => Home()));
+      }).catchError((e) {
+        print(e);
+      });
+    };
+    final PhoneVerificationFailed veriFailed = (AuthException exception) {
       print('${exception.message}');
-       
     };
-await FirebaseAuth.instance.verifyPhoneNumber(
-   phoneNumber: "${this.countryCode} ${this.phoneNo}",
-   codeAutoRetrievalTimeout: autoRetrive,
-   codeSent: smsCodeSent,
-   timeout: const Duration(seconds:5),
-   verificationCompleted: verifiedSuccess,
-   verificationFailed: veriFailed,
-);
- } 
-
- Future<bool> smsCodeDialog(BuildContext context){
-     return showDialog(
-       context: context,
-       barrierDismissible: false,
-       builder: (BuildContext contect){
-       
-       return Scaffold(
-      appBar: AppBar(
-          centerTitle: true,
-          title: Text("Mobile verification",
-              style:
-              TextStyle(fontFamily: "Exo2", color: Colors.white)),
-          backgroundColor: Colors.black,
-        ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Center(
-          
-          child: Column(
-
-            children: <Widget>[
-              Text("Enter the 6 digit code sent to ${this.phoneNo}",
-              style: TextStyle(fontFamily: "Exo2",color: Colors.black, fontSize: 19, fontWeight: FontWeight.bold)),
-              new VerificationCodeInput(
-            keyboardType: TextInputType.number,
-            length: 6,
-            onCompleted: (String value) {
-              this.smsCode=value;
-            },
-           ),
-             Spacer(),
-             Container(
-               child: Ink(
-        decoration: ShapeDecoration(
-          color: Colors.black,
-          shape: CircleBorder(),
-          
-        ),
-        child:  IconButton(
-          icon: Icon(Icons.arrow_forward),
-          color: Colors.white,
-          onPressed: () {
-           FirebaseAuth.instance.currentUser().then((user) {
-                 if (user!=null) {
-                   Navigator.of(context).pop();
-                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
-                      Home()
-                    ));
-                 }else{
-                   Navigator.of(context).pop();
-                   signIn();
-                 }
-               });
-          },
-        ),
-           ),
-             ),
-         
-            ],
-          ),
-        ),
-      ),
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: "${this.countryCode} ${this.phoneNo}",
+      codeAutoRetrievalTimeout: autoRetrive,
+      codeSent: smsCodeSent,
+      timeout: const Duration(seconds: 5),
+      verificationCompleted: verifiedSuccess,
+      verificationFailed: veriFailed,
     );
-       
-       }
-     );
-   } 
+  }
 
- signIn() async {
+  Future<bool> smsCodeDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext contect) {
+          return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: Text("Mobile verification",
+                  style: TextStyle(fontFamily: "Exo2", color: Colors.white)),
+              backgroundColor: Colors.black,
+            ),
+            body: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(
+                child: Column(
+                  children: <Widget>[
+                    Text("Enter the 6 digit code sent to ${this.phoneNo}",
+                        style: TextStyle(
+                            fontFamily: "Exo2",
+                            color: Colors.black,
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold)),
+                    new VerificationCodeInput(
+                      keyboardType: TextInputType.number,
+                      length: 6,
+                      onCompleted: (String value) {
+                        this.smsCode = value;
+                      },
+                    ),
+                    Spacer(),
+                    Container(
+                      child: Ink(
+                        decoration: ShapeDecoration(
+                          color: Colors.black,
+                          shape: CircleBorder(),
+                        ),
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_forward),
+                          color: Colors.white,
+                          onPressed: () {
+                            FirebaseAuth.instance.currentUser().then((user) {
+                              if (user != null) {
+                                Navigator.of(context).pop();
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            Home()));
+                              } else {
+                                Navigator.of(context).pop();
+                                signIn();
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
 
+  signIn() async {
+    final AuthCredential credential = PhoneAuthProvider.getCredential(
+      verificationId: verificationId,
+      smsCode: smsCode,
+    );
 
-
-final AuthCredential credential = PhoneAuthProvider.getCredential(
-  verificationId: verificationId,
-  smsCode: smsCode,
-);
-
-        await FirebaseAuth.instance.signOut().then((action){
-FirebaseAuth.instance.signInWithCredential(credential).then((user){
-
-                    WebServices(this.mApiListener).createAccount(this.phoneNo);
-                    Navigator.of(context).pop();
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) =>
-                   Home()
-                   ));
-                  
-                  
-      
-}).catchError((e){
-  print(e);
-});
-            });
-
-}
-  
+    await FirebaseAuth.instance.signOut().then((action) {
+      FirebaseAuth.instance.signInWithCredential(credential).then((user) {
+        WebServices(this.mApiListener).createAccount(this.phoneNo);
+        Navigator.of(context).pop();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (BuildContext context) => Home()));
+      }).catchError((e) {
+        print(e);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
           title: Text("Mobile verification",
-              style:
-              TextStyle(fontFamily: "Exo2", color: Colors.white)),
+              style: TextStyle(fontFamily: "Exo2", color: Colors.white)),
           backgroundColor: Colors.black,
         ),
-        body: 
-        Padding(
+        body: Padding(
           padding: EdgeInsets.all(16.0),
           child: Center(
-             child: SingleChildScrollView(
-             
-           
-            child: Column(
-             children: <Widget>[
-               Text('Please enter your mobile number',style: TextStyle(fontSize: 18, fontFamily: "Exo2")),
-                 SizedBox(height: 15.0),
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Text('Please enter your mobile number',
+                      style: TextStyle(fontSize: 18, fontFamily: "Exo2")),
+                  SizedBox(height: 15.0),
                   Row(
-               children: <Widget>[
+                    children: <Widget>[
                       Expanded(
-                        
                         child: CountryPickerDropdown(
-                          
                           initialValue: 'lk',
                           itemBuilder: _buildDropdownItem,
                           onValuePicked: (Country country) {
                             print("${country.phoneCode}");
-                            this.countryCode="+${country.phoneCode}";
+                            this.countryCode = "+${country.phoneCode}";
                           },
                         ),
                       ),
                       Expanded(
-                        
                         child: TextField(
                           keyboardType: TextInputType.phone,
                           decoration: InputDecoration(
@@ -208,52 +178,39 @@ FirebaseAuth.instance.signInWithCredential(credential).then((user){
                             hintText: "777140803",
                           ),
                           style: TextStyle(fontSize: 18, fontFamily: "Exo2"),
-                          onChanged: (value){
+                          onChanged: (value) {
                             print(value);
                             this.phoneNo = value;
-                            },
+                          },
                         ),
                       ),
                     ],
                   ),
-             
                   SizedBox(height: 15.0),
                   RaisedButton(
-           onPressed: verifyPhone,
-           child: Text('verify'),
-           textColor: Colors.white,
-           elevation: 7.0,
-           color: Colors.black,
-         )
-        
+                    onPressed: verifyPhone,
+                    child: Text('verify'),
+                    textColor: Colors.white,
+                    elevation: 7.0,
+                    color: Colors.black,
+                  )
                 ],
-              
+              ),
             ),
-          
           ),
-                ),
-        )
-
-
-
-
-         
-    );
+        ));
   }
 
-
-Widget _buildDropdownItem(Country country) => Container(
+  Widget _buildDropdownItem(Country country) => Container(
         child: Row(
           children: <Widget>[
             CountryPickerUtils.getDefaultFlagImage(country),
             SizedBox(
               width: 3.0,
             ),
-            Text("+${country.phoneCode}", style: TextStyle(fontSize: 18, fontFamily: "Exo2")),
+            Text("+${country.phoneCode}",
+                style: TextStyle(fontSize: 18, fontFamily: "Exo2")),
           ],
         ),
       );
-
-
-
 }
